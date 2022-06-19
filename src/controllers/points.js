@@ -17,6 +17,28 @@ controller.getPoints = async(req, res) => {
 
 }
 
+controller.getPointsById = async(req, res) => {
+    const { id } = req.params;
+    if (req.user.status == "admin") {
+        if (id.length > 23 && id.length <= 24) {
+            const data = Point.find({
+                    '_id': id
+                }, { __v: 0 },
+                (err, result) => {
+                    if (err) {
+                        throw err;
+                    }
+                    return res.status(200).json({ status: "OK", result })
+                })
+        } else {
+            return res.status(400).json({ status: "ERROR", message: "It's not an ID" })
+        }
+    } else {
+        return res.status(400).json({ status: "ERROR", message: "You're not administrator" })
+    }
+
+}
+
 controller.createPoints = async(req, res) => {
     const { userId, pointGroup } = req.body;
 
