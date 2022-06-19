@@ -2,14 +2,38 @@ const bcrypt = require("bcrypt");
 const { model, Schema } = require("mongoose");
 
 const userSchema = new Schema({
-    username: String,
-    status: String,
-    robloxNickname: String,
-    robloxId: String,
-    yearsOld: Number,
-    gender: String,
-    email: String,
-    password: String
+    username: {
+        type: String,
+        required: [true, "Username required"]
+    },
+    status: {
+        type: String,
+        required: [true, "Status required"]
+    },
+    robloxNickname: {
+        type: String,
+        required: [true, "Roblox user required"]
+    },
+    robloxId: {
+        type: String,
+        required: [true, "Roblox ID required"]
+    },
+    yearsOld: {
+        type: Number,
+        required: [true, "Years old required"]
+    },
+    gender: {
+        type: String,
+        required: [true, "Gender required"]
+    },
+    email: {
+        type: String,
+        required: false
+    },
+    password: {
+        type: String,
+        required: [true, "Password required"]
+    }
 })
 
 userSchema.methods.validatePassword = function(password) {
