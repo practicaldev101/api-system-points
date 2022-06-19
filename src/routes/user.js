@@ -5,7 +5,7 @@ require("../security/passport")
 
 const routes = app => {
 
-    app.post("/", (req, res) => { res.json({ message: "Funciona" }) });
+    app.get("/", (req, res) => { res.json({ status: "OK", message: "API is working." }) });
 
     /**
      * Authentication route
