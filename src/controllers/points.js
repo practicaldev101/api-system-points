@@ -65,6 +65,43 @@ controller.createPoints = async(req, res) => {
     }
 }
 
+controller.incrementById = async(req, res) => {
+    const { id } = req.params
+    const { pointGroup } = req.body;
+
+    if (req.user.status == "admin") {
+        Point.find({ "userId": id }, (err, data) => {
+            if (err) {
+                console.log(err)
+            }
+            if (data !== null) {
+
+                Object.keys(pointGroup).map(async(field) => {
+                    var pointedField = ''
+                    var canIncrement = true
+                    if (field == "serverPoints") {
+                        pointedField = { "pointGroup.0.serverPoints": pointGroup[field] }
+                    } else {
+                        pointedField = { "pointGroup.0.invalid": 0 }
+                        canIncrement = false
+                    }
+
+                    if (canIncrement == true) {
+                        console.log(pointedField)
+                        await Point.updateOne({ "userId": id }, { $inc: pointedField })
+                    }
+                })
+                return res.status(200).json({ status: "OK", message: "Data have been incremented" })
+            } else {
+                return res.status(400).json({ status: "ERROR", message: "Data don't exist" })
+            }
+        })
+
+    } else {
+        return res.status(400).json({ status: "ERROR", message: "You're not administrator" })
+    }
+}
+
 controller.updatePoints = async(req, res) => {
     const { id } = req.params
     const { pointGroup } = req.body;
