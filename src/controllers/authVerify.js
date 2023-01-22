@@ -5,7 +5,7 @@ const middleware = {};
 
 middleware.verifyToken = async(req, res, next) => {
 
-    const token = req.headers["x-access-token"];
+    const token = req.headers["access-token"];
 
     if (token) {
         try {

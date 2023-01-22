@@ -15,7 +15,7 @@ passport.use('local', new LocalStrategy({
     usernameField: 'username',
     passwordField: 'password'
 }, async function(username, password, cb) {
-    return await UserModel.findOne({ username: username }, { __v: 0 }).exec()
+    return await UserModel.findOne({ gameNickname: username }, { __v: 0 }).exec()
         .then(async(user) => {
             if (!user) {
                 return cb(null, false, { message: 'Incorrect username or password.' });

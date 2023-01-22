@@ -23,7 +23,7 @@ const config = app => {
         resave: false,
         saveUninitialized: true,
         store: new MongoStore({ mongooseConnection: mongoose.connection }),
-        cookie: { maxAge: 60 * 60 * 1000 }
+        cookie: { maxAge: 60 * 60 * 2 }
     }))
 
     app.use(passport.initialize())

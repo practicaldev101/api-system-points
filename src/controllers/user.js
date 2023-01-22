@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const controller = {};
 const ObjectId = require('mongoose').Types.ObjectId;
-
+const allowedRoles = ["administrator", "moderator"]
 
 controller.getProfile = (req, res, next) => {
     res.json(req.user);
@@ -11,16 +11,16 @@ controller.getProfile = (req, res, next) => {
 
 controller.updateProfile = async(req, res, next) => {
     if (req.user) {
-        const { username, status, robloxNickname, robloxId, yearsOld, gender, email, password } = req.body;
+        const { username, gameNickname, gameId, discordId, yearsOld, gender, password } = req.body;
         const user = new User({
             _id: req.user._id,
             username: username,
-            robloxNickname: robloxNickname,
-            status: req.user.status,
-            robloxId: robloxId,
+            role: req.user.role,
+            gameNickname: gameNickname,
+            gameId: gameId,
+            discordId: discordId,
             yearsOld: yearsOld,
             gender: gender,
-            email: email,
             password: password
         });
 
@@ -59,7 +59,7 @@ controller.signin = async(req, res, next) => {
             }
         });
         if (req.user && limited == false) {
-            if (req.user.status == "admin") {
+            if (allowedRoles.includes(req.user.role)) {
                 const token = jwt.sign({ _id: user.toJSON()._id }, process.env.SECRET, { expiresIn: (60 * 60 * 24) * 365 });
                 return res.json({ status: "OK", token });
             }
@@ -69,21 +69,21 @@ controller.signin = async(req, res, next) => {
     })(req, res);
 }
 controller.signup = async(req, res, next) => {
-    if (req.user.status == "admin") {
-        const { username, status, robloxNickname, robloxId, yearsOld, gender, email, password } = req.body;
+    if ( allowedRoles.includes(req.user.role)) {
+        const { username, role, gameNickname, gameId, discordId, yearsOld, gender, password } = req.body;
 
         const user = new User({
             username: username,
-            status: status,
-            robloxNickname: robloxNickname,
-            robloxId: robloxId,
+            role: role,
+            gameNickname: gameNickname,
+            gameId: gameId,
+            discordId: discordId,
             yearsOld: yearsOld,
             gender: gender,
-            email: email,
             password: password
         });
 
-        const data = User.find({ $or: [{ 'username': username }, { 'robloxNickname': robloxNickname }, { 'robloxId': robloxId }] }, async(err, result) => {
+        const data = User.find({ $or: [{ 'username': username }, { 'gameNickname': gameNickname }, { 'gameId': gameId }] }, async(err, result) => {
             if (err) {
                 console.log(err)
             }
@@ -105,12 +105,12 @@ controller.signup = async(req, res, next) => {
 
 controller.getUsers = async(req, res, next) => {
 
-    if (req.user.status == "admin") {
+    if ( allowedRoles.includes(req.user.role)) {
         const data = User.find({}, { __v: 0 }, (err, result) => {
             if (err) {
                 console.log(err)
             }
-            return res.status(200).json({ status: "OK", result })
+            return res.status(200).json({ status: "OK", data: result })
         });
 
     } else {
@@ -121,7 +121,7 @@ controller.getUsers = async(req, res, next) => {
 
 controller.getUserById = async(req, res, next) => {
 
-    if (req.user.status == "admin") {
+    if ( allowedRoles.includes(req.user.role)) {
         const { id } = req.params;
         if (id.length > 23) {
             const data = User.find({
@@ -131,7 +131,7 @@ controller.getUserById = async(req, res, next) => {
                     if (err) {
                         throw err;
                     }
-                    return res.status(200).json({ status: "OK", result })
+                    return res.status(200).json({ status: "OK", data: result })
                 })
         } else {
             return res.status(400).json({ status: "ERROR", message: "It's not an ID" })
@@ -143,26 +143,22 @@ controller.getUserById = async(req, res, next) => {
 
 controller.updateUserById = async(req, res, next) => {
 
-    const { username, status, robloxNickname, robloxId, yearsOld, gender, email, password } = req.body;
+    const { username, role, gameNickname, gameId, discordId, yearsOld, gender} = req.body;
     const { id } = req.params;
 
-    if (req.user.status == "admin") {
+    if ( allowedRoles.includes(req.user.role)) {
         if (id.length > 23 && id.length <= 24) {
             const user = new User({
                 _id: new ObjectId(id),
                 username: username,
-                status: status,
-                robloxNickname: robloxNickname,
-                robloxId: robloxId,
+                role: role,
+                gameNickname: gameNickname,
+                gameId: gameId,
+                discordId: discordId,
                 yearsOld: yearsOld,
                 gender: gender,
-                email: email,
-                password: password
             });
 
-            user.password = await user.encryptPassword(user.password);
-
-            console.log(user.password)
             const data = User.findOneAndUpdate({
                     "_id": id
                 }, { $set: user },
@@ -188,7 +184,7 @@ controller.updateUserById = async(req, res, next) => {
 
 controller.getUsersByKey = async(req, res, next) => {
 
-    if (req.user.status == "admin") {
+    if ( allowedRoles.includes(req.user.role)) {
         const { key } = req.params;
         const keyQuery = { $regex: '.*' + key + '.*', $options: 'i' };
 
@@ -200,19 +196,19 @@ controller.getUsersByKey = async(req, res, next) => {
                     if (err) {
                         console.log(err)
                     }
-                    return res.status(200).json({ status: "OK", result })
+                    return res.status(200).json({ status: "OK", data: result })
                 }
 
             )
         } else {
             const data = User.find({
-                    $or: [{ 'username': keyQuery }, { 'robloxNickname': keyQuery }, { 'status': keyQuery }]
+                    $or: [{ 'username': keyQuery }, { 'gameNickname': keyQuery }, { 'role': keyQuery }]
                 },
                 (err, result) => {
                     if (err) {
                         console.log(err)
                     }
-                    return res.status(200).json({ status: "OK", result })
+                    return res.status(200).json({ status: "OK", data: result })
                 }
 
             )
@@ -226,7 +222,7 @@ controller.getUsersByKey = async(req, res, next) => {
 }
 
 controller.deleteUserById = async(req, res) => {
-    if (req.user.status == "admin") {
+    if ( allowedRoles.includes(req.user.role)) {
         const { id } = req.params;
         User.findByIdAndDelete(id, (err, data) => {
             if (err) {

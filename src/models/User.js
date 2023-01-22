@@ -6,17 +6,21 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Username required"]
     },
-    status: {
+    role: {
         type: String,
-        required: [true, "Status required"]
+        required: [true, "Role required"]
     },
-    robloxNickname: {
+    gameNickname: {
         type: String,
-        required: [true, "Roblox user required"]
+        required: [true, "Game nickname required"]
     },
-    robloxId: {
+    gameId: {
         type: String,
-        required: [true, "Roblox ID required"]
+        required: [true, "Game ID required"]
+    },
+    discordId: {
+        type: String,
+        required: [true, "Discord ID required"]
     },
     yearsOld: {
         type: Number,
@@ -25,10 +29,6 @@ const userSchema = new Schema({
     gender: {
         type: String,
         required: [true, "Gender required"]
-    },
-    email: {
-        type: String,
-        required: false
     },
     password: {
         type: String,
