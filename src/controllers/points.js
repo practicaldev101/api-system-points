@@ -101,7 +101,7 @@ controller.createGamePoints = async(req, res) => {
     }
 }
 
-controller.updatePointsById = async(req, res) => {
+controller.updateGamePointsById = async(req, res) => {
     const {playerId, game, pointId  } = req.params;
     const { points } = req.body;
 
