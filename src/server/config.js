@@ -3,6 +3,7 @@ const session = require("express-session")
 const passport = require("passport");
 const userRoutes = require("../routes/user");
 const pointRoutes = require("../routes/point");
+const notificationRoutes = require("../routes/notification");
 const mongoose = require("mongoose");
 const MongoStore = require("connect-mongo")(session)
 const cookieParser = require("cookie-parser")
@@ -30,7 +31,8 @@ const config = app => {
     app.use(passport.session())
 
     userRoutes(app);
-    pointRoutes(app)
+    pointRoutes(app);
+    notificationRoutes(app);
 }
 
 module.exports = config;
