@@ -6,13 +6,13 @@ const userSchema = new Schema({
         type: String,
         required: [true, "Username required"]
     },
+    nickname: {
+        type: String,
+        required: [true, "Game nickname required"]
+    },
     role: {
         type: String,
         required: [true, "Role required"]
-    },
-    gameNickname: {
-        type: String,
-        required: [true, "Game nickname required"]
     },
     gameId: {
         type: String,

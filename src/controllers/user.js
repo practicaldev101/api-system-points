@@ -6,7 +6,7 @@ const ObjectId = require('mongoose').Types.ObjectId;
 const allowedRoles = ["administrator", "moderator"]
 
 controller.getProfile = (req, res, next) => {
-    res.json(req.user);
+    res.status(200).json(req.user);
 }
 
 controller.updateProfile = async(req, res, next) => {
@@ -70,12 +70,12 @@ controller.signin = async(req, res, next) => {
 }
 controller.signup = async(req, res, next) => {
     if ( allowedRoles.includes(req.user.role)) {
-        const { username, role, gameNickname, gameId, discordId, yearsOld, gender, password } = req.body;
+        const { username, nickname, role, gameId, discordId, yearsOld, gender, password } = req.body;
 
         const user = new User({
             username: username,
+            nickname: nickname,
             role: role,
-            gameNickname: gameNickname,
             gameId: gameId,
             discordId: discordId,
             yearsOld: yearsOld,
@@ -83,7 +83,7 @@ controller.signup = async(req, res, next) => {
             password: password
         });
 
-        const data = User.find({ $or: [{ 'username': username }, { 'gameNickname': gameNickname }, { 'gameId': gameId }] }, async(err, result) => {
+        User.find({ $or: [{ 'username': username }, { 'nickname': nickname }, { 'gameId': gameId }] }, async(err, result) => {
             if (err) {
                 console.log(err)
             }
@@ -106,7 +106,7 @@ controller.signup = async(req, res, next) => {
 controller.getUsers = async(req, res, next) => {
 
     if ( allowedRoles.includes(req.user.role)) {
-        const data = User.find({}, { __v: 0 }, (err, result) => {
+        User.find({}, { __v: 0 }, (err, result) => {
             if (err) {
                 console.log(err)
             }
@@ -124,7 +124,7 @@ controller.getUserById = async(req, res, next) => {
     if ( allowedRoles.includes(req.user.role)) {
         const { id } = req.params;
         if (id.length > 23) {
-            const data = User.find({
+            User.find({
                     '_id': id
                 },
                 (err, result) => {
@@ -143,7 +143,8 @@ controller.getUserById = async(req, res, next) => {
 
 controller.updateUserById = async(req, res, next) => {
 
-    const { username, role, gameNickname, gameId, discordId, yearsOld, gender} = req.body;
+    const { username, nickname, role, gameId, discordId, yearsOld, gender, password } = req.body;
+
     const { id } = req.params;
 
     if ( allowedRoles.includes(req.user.role)) {
@@ -151,12 +152,13 @@ controller.updateUserById = async(req, res, next) => {
             const user = new User({
                 _id: new ObjectId(id),
                 username: username,
+                nickname: nickname,
                 role: role,
-                gameNickname: gameNickname,
                 gameId: gameId,
                 discordId: discordId,
                 yearsOld: yearsOld,
                 gender: gender,
+                password: password
             });
 
             const data = User.findOneAndUpdate({
@@ -189,7 +191,7 @@ controller.getUsersByKey = async(req, res, next) => {
         const keyQuery = { $regex: '.*' + key + '.*', $options: 'i' };
 
         if (Number.isInteger(Number(key))) {
-            const data = User.find({
+            User.find({
                     'yearsOld': key
                 },
                 (err, result) => {
@@ -201,8 +203,8 @@ controller.getUsersByKey = async(req, res, next) => {
 
             )
         } else {
-            const data = User.find({
-                    $or: [{ 'username': keyQuery }, { 'gameNickname': keyQuery }, { 'role': keyQuery }]
+            User.find({
+                    $or: [{ 'username': keyQuery }, { 'nickname': keyQuery }, { 'role': keyQuery }]
                 },
                 (err, result) => {
                     if (err) {
