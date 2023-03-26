@@ -4,35 +4,43 @@ const { model, Schema } = require("mongoose");
 const userSchema = new Schema({
     username: {
         type: String,
-        required: [true, "Username required"]
+        required: [true, "Username required"],
+        default: () => "N/A"
     },
     nickname: {
         type: String,
-        required: [true, "Game nickname required"]
+        required: [true, "Game nickname required"],
+        default: () => "N/A"
     },
     role: {
         type: String,
-        required: [true, "Role required"]
+        required: [true, "Role required"],
+        default: () => "member"
     },
     gameId: {
         type: String,
-        required: [true, "Game ID required"]
+        required: [true, "Game ID required"],
+        default: () => "N/A"
     },
     discordId: {
         type: String,
-        required: [true, "Discord ID required"]
+        required: [true, "Discord ID required"],
+        default: () => "N/A"
     },
     yearsOld: {
         type: Number,
-        required: [true, "Years old required"]
+        required: [true, "Years old required"],
+        default: () => 0
     },
     gender: {
         type: String,
-        required: [true, "Gender required"]
+        required: [true, "Gender required"],
+        default: () => "N/A"
     },
     password: {
         type: String,
-        required: [true, "Password required"]
+        required: [true, "Password required"],
+        default: () => "N/A"
     }
 })
 
