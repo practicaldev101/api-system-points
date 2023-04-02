@@ -4,7 +4,7 @@ require("../security/passport")
 
 const routes = app => {
 
-    app.get("/api/notification", passport.authenticate('jwt', { session: false }),notification_controller.notify);
+    app.post("/api/notification", passport.authenticate('jwt', { session: false }),notification_controller.notify);
 
 }
 
